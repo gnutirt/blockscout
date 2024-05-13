@@ -10,6 +10,7 @@ defmodule BlockScoutWeb.Application do
   alias BlockScoutWeb.Prometheus.{Exporter, PhoenixInstrumenter}
   alias BlockScoutWeb.{Endpoint, MainPageRealtimeEventHandler, RealtimeEventHandler, SmartContractRealtimeEventHandler}
   alias BlockScoutWeb.Utility.EventHandlersMetrics
+  alias Explorer.Chain.Metrics, as: ChainMetrics
 
   def start(_type, _args) do
     import Supervisor
@@ -40,7 +41,8 @@ defmodule BlockScoutWeb.Application do
       {SmartContractRealtimeEventHandler, name: SmartContractRealtimeEventHandler},
       {BlocksIndexedCounter, name: BlocksIndexedCounter},
       {InternalTransactionsIndexedCounter, name: InternalTransactionsIndexedCounter},
-      {EventHandlersMetrics, []}
+      {EventHandlersMetrics, []},
+      {ChainMetrics, []}
     ]
 
     opts = [strategy: :one_for_one, name: BlockScoutWeb.Supervisor, max_restarts: 1_000]
