@@ -4239,44 +4239,73 @@ defmodule Explorer.ChainTest do
       hex_reason =
         "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000164e6f20637265646974206f662074686174207479706500000000000000000000"
 
-      expect(
-        EthereumJSONRPC.Mox,
-        :json_rpc,
-        fn _json, [] ->
-          {:ok,
-           [
-             %{
-               id: 0,
-               result: %{
-                 "output" => "0x",
-                 "stateDiff" => nil,
-                 "trace" => [
-                   %{
-                     "action" => %{
-                       "callType" => "call",
-                       "from" => "0x6a17ca3bbf83764791f4a9f2b4dbbaebbc8b3e0d",
-                       "gas" => "0x5208",
-                       "input" => "0x01",
-                       "to" => "0x7ed1e469fcb3ee19c0366d829e291451be638e59",
-                       "value" => "0x86b3"
-                     },
-                     "error" => "Reverted",
-                     "result" => %{
-                       "gasUsed" => "0x5208",
-                       "output" => hex_reason
-                     },
-                     "subtraces" => 0,
-                     "traceAddress" => [],
-                     "type" => "call"
+      json_rpc_named_arguments = Application.fetch_env!(:explorer, :json_rpc_named_arguments)
+
+      case Keyword.fetch!(json_rpc_named_arguments, :variant) do
+        EthereumJSONRPC.Geth ->
+          expect(
+            EthereumJSONRPC.Mox,
+            :json_rpc,
+            fn _json, _options ->
+              {:ok,
+               [
+                 %{
+                   id: 0,
+                   result: %{
+                     "from" => "0x6a17ca3bbf83764791f4a9f2b4dbbaebbc8b3e0d",
+                     "gas" => "0x5208",
+                     "gasUsed" => "0x5208",
+                     "input" => "0x01",
+                     "output" => hex_reason,
+                     "to" => "0x7ed1e469fcb3ee19c0366d829e291451be638e59",
+                     "type" => "CALL",
+                     "value" => "0x86b3"
                    }
-                 ],
-                 "transactionHash" => "0xdf5574290913659a1ac404ccf2d216c40587f819400a52405b081dda728ac120",
-                 "vmTrace" => nil
-               }
-             }
-           ]}
-        end
-      )
+                 }
+               ]}
+            end
+          )
+
+        _ ->
+          expect(
+            EthereumJSONRPC.Mox,
+            :json_rpc,
+            fn _json, _options ->
+              {:ok,
+               [
+                 %{
+                   id: 0,
+                   result: %{
+                     "output" => "0x",
+                     "stateDiff" => nil,
+                     "trace" => [
+                       %{
+                         "action" => %{
+                           "callType" => "call",
+                           "from" => "0x6a17ca3bbf83764791f4a9f2b4dbbaebbc8b3e0d",
+                           "gas" => "0x5208",
+                           "input" => "0x01",
+                           "to" => "0x7ed1e469fcb3ee19c0366d829e291451be638e59",
+                           "value" => "0x86b3"
+                         },
+                         "error" => "Reverted",
+                         "result" => %{
+                           "gasUsed" => "0x5208",
+                           "output" => hex_reason
+                         },
+                         "subtraces" => 0,
+                         "traceAddress" => [],
+                         "type" => "call"
+                       }
+                     ],
+                     "transactionHash" => "0xdf5574290913659a1ac404ccf2d216c40587f819400a52405b081dda728ac120",
+                     "vmTrace" => nil
+                   }
+                 }
+               ]}
+            end
+          )
+      end
 
       assert Chain.transaction_to_revert_reason(transaction) == hex_reason
 
