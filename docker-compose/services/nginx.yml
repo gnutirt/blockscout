@@ -12,8 +12,10 @@ services:
       BACK_PROXY_PASS: ${BACK_PROXY_PASS:-http://192.168.0.55:4000}
       FRONT_PROXY_PASS: ${FRONT_PROXY_PASS:-http://192.168.0.55:3000}
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-      - "8081:8081"
- 
+      - target: 80
+        published: 80
+      - target: 8080
+        published: 8080
+      - target: 8081
+        published: 8081
+
