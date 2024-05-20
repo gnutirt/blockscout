@@ -7,8 +7,7 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
-      - ../proxy:/etc/nginx/templates
-      - ../certs:/etc/nginx/ssl
+      - ../proxy:/etc/nginx/templates     
     environment:
       BACK_PROXY_PASS: ${BACK_PROXY_PASS:-http://192.168.0.55:4000}
       FRONT_PROXY_PASS: ${FRONT_PROXY_PASS:-http://192.168.0.55:3000}
