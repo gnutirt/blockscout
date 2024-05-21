@@ -71,7 +71,7 @@ defmodule BlockScoutWeb.Endpoint do
     # 'x-apollo-tracing' header for https://www.graphqlbin.com to work with our GraphQL endpoint
       #plug(CORSPlug, headers: ["x-apollo-tracing" | CORSPlug.defaults()[:headers]])
       plug(CORSPlug,
-      origin: ["https://wonnetwork.org", "http://192.168.0.55","*"],
+      origin: ["https://wonnetwork.org", "http://192.168.0.55","*","http://scan.wonnetwork.org/","http://wonhost.zapto.org"],
       headers: ["x-apollo-tracing" | CORSPlug.defaults()[:headers]]
     )
 
